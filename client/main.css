@@ -1,0 +1,135 @@
+@font-face {
+  font-family: 'apotek';
+  src: url("/font/Apotek_Black.otf");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'apotek';
+  src: url("/font/ApotekBold.otf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'apotek';
+  src: url("/font/ApotekMedium.otf");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'apotek';
+  src: url("/font/ApotekSemibold.otf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'apotek';
+  src: url("/font/ApotekLight.otf");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --master: #6ed1ff; /* #56b2bf*/
+    --elite: #2ccc6f;
+    --rival: #f1c40d;
+    --prospect: #e06564;
+
+    --master-foreground: #020202;
+    --elite-foreground: #020202;
+    --rival-foreground: #020202;
+    --prospect-foreground: #020202;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+  }
+
+  /*Add additional theme css variables here, you can ask @ACleverRabbit on discord for help if needed*/
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    font-family: "apotek", sans-serif;
+    font-weight: 500;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .background-image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .ticker {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker__list {
+    display: inline-block;
+    animation: ticker 60s linear infinite; /* Slow down the animation */
+  }
+
+  .ticker__item {
+    display: inline-block;
+    padding: 0 2rem; /* Adjust spacing as needed */
+  }
+
+  /* Slower animation and tighter loop */
+  @keyframes ticker {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-33%); /* Move halfway to create the effect of frequent repetition */
+    }
+  }
+
+  .circle-gradient {
+    border-radius: 50%;
+    background: radial-gradient(circle, transparent 50%, black 22%, red 90%);
+    border: 4px solid transparent; /* Create the inner border effect */
+    background-clip: padding-box, border-box;
+    background-color: black;
+  }
+}

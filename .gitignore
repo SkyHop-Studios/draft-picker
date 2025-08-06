@@ -1,0 +1,11 @@
+node_modules/
+
+.idea
+deploy.bat
+k8-deploy-secret.md
+secret
+
+imports/api/services/registry.ts
+
+settings.json
+.env
