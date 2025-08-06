@@ -5,7 +5,7 @@ import {IDateProvider} from '/imports/core/infrastructure/services/date-provider
 import {LocateFunction} from '/imports/core/di/registry'
 
 export type IPlayerstatsRepository = IRepository<PlayerstatsDocument> & {
-  findAndSumAllPlayerStatsByPlayerId(playerId: string): { goals: number; assists: number; saves: number; demosInflicted: number; gamesPlayed: number, winPercentage: number; mvps: number }
+  findAndSumAllPlayerStatsByPlayerId(playerId: number): { goals: number; assists: number; saves: number; demosInflicted: number; gamesPlayed: number, winPercentage: number; mvps: number }
 }
 
 export function createPlayerstatsRepository(_dateProvider: IDateProvider): IPlayerstatsRepository {
@@ -13,7 +13,7 @@ export function createPlayerstatsRepository(_dateProvider: IDateProvider): IPlay
   return {
     ...service,
     findAndSumAllPlayerStatsByPlayerId(playerId) {
-      const allStats = PlayerstatsCollection.find({playerId: playerId}).fetch();
+      const allStats = PlayerstatsCollection.find({playerID: playerId}).fetch();
       if (allStats.length === 0) {
         return {
           goals: 0,

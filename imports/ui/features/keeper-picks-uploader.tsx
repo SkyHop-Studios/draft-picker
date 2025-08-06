@@ -21,7 +21,7 @@ export const KeeperUploaderFrom = () => {
           const playerData = results.data.map((row: any) => {
             return  ({
               name: row['Manager Name'],
-              playerId: row['Profile ID'],
+              playerID: row['Profile ID'],
               pickRound: parseInt(row['Keeper']),
               franchise: FranchisesSlugs[row['Franchise']],
               cmv: parseInt(row['CMV'], 10),
@@ -29,8 +29,6 @@ export const KeeperUploaderFrom = () => {
               role: row['Role']
             })
           });
-
-          console.log('Parsed player data:', playerData);
 
           // Call the Meteor method with the parsed player data
           updatePlayersCMVMutation.mutate(playerData, {

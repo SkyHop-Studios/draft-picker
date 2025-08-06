@@ -19,7 +19,7 @@ export const PlayerUploaderFrom = () => {
           const playerData = results.data.map((row: any) => {
             return  ({
               name: row['playerName'],
-              playerId: row['playerId'],
+              playerID: row['playerId'],
               CMV: parseInt(row['cmv'], 10),
               tier: row['tier'].toLowerCase() as Tiers,
             })

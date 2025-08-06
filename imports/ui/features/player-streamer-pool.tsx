@@ -5,6 +5,21 @@ import _ from 'lodash';
 import {cn} from '@/lib/utils'
 import {borderForRoster, opaqueBackgroundPlayerPoolForTier} from '@/pages/streamer-page'
 
+const BackgroundByTier = (tier: Tiers) => {
+  switch (tier) {
+    case "elite":
+      return "/pool/Elite.png";
+    case "rival":
+      return "/pool/Rival.png";
+    case "prospect":
+      return "/pool/Prospect.png";
+    case "master":
+      return "/pool/Master.png";
+    default:
+      return "/pool/Elite.png";
+  }
+}
+
 const PlayerStreamerPool = ({ tier }: { tier: Tiers }) => {
   const { isLoading, data: players } = useMethodQuery("draft.findPlayersByNameAndTier", { tier }, {
     refetchInterval: 1000,
@@ -31,7 +46,7 @@ const PlayerStreamerPool = ({ tier }: { tier: Tiers }) => {
     setSelectedPlayers(playersChosen);
   }, [players]);
 
-  return <div className={cn("text-white text-3xl border-t-2 py-2", opaqueBackgroundPlayerPoolForTier[tier], borderForRoster[tier])}>
+  return <div className={cn("text-white text-3xl py-2 bg-cover bg-no-repeat bg-center")} style={{ backgroundImage: `url(${BackgroundByTier(tier)})` }}>
     <div className="ticker">
       <div className="ticker__list">
         {/* Repeat the list twice to create the appearance of frequent repetition */}

@@ -4,9 +4,9 @@ export type PlayerstatsDocument = {
   createdAt: Date
   updatedAt: Date
 
-  playerId: string
+  playerID: number
   format: "Pre-Season" | "League Play" | "Play-Offs"
-  teamId: string
+  teamID: string
   tier: "Elite" | "Rival" | "Prospect" | "Master"
   season: "season1" | "season2" | "season3"
   minutesPlayed: number

@@ -60,7 +60,7 @@ export type IDraftControllerService = {
     nextFranchise: FranchisesDocument | undefined;
   };
 
-  updatePlayersCMV: (playerData: { name: string; CMV: number; playerId: string; tier: Tiers }[]) => void;
+  updatePlayersCMV: (playerData: { name: string; CMV: number; playerID: string; tier: Tiers }[]) => void;
   updatePlayerStats: (playerData: NewDocument<PlayerstatsDocument>[]) => void;
   uploadKeepers: (keeperData: NewDocument<KeeperpicksDocument>[]) => void;
 
@@ -152,7 +152,7 @@ export function createDraftControllerService(
         return null;
       }
 
-      const playerStats = playerStatsRepository.findAndSumAllPlayerStatsByPlayerId(player.statPlayerId || "");
+      const playerStats = playerStatsRepository.findAndSumAllPlayerStatsByPlayerId(parseInt(player.statPlayerId) || 0);
       return {
         ...player,
         goals: playerStats?.goals,
@@ -182,7 +182,7 @@ export function createDraftControllerService(
 
       return currentRoundKeeperPicks.map((pick) => {
         const currentPickOrder = pickOrderRepository.getByIdOrThrow('pick_order')
-        const hasPassed = currentPickOrder.chosenPlayers[currentTier].some(chosen => chosen.statPlayerId === pick.playerId);
+        const hasPassed = currentPickOrder.chosenPlayers[currentTier].some(chosen => chosen.statPlayerId === pick.playerID);
         return ({
           ...pick,
           currentlyChoosing: pick.franchise === currentFranchise,
@@ -423,14 +423,14 @@ export function createDraftControllerService(
           playersRepository.create({
             name: player.name,
             safeName: sanitizedPlayerName,
-            statPlayerId: player.playerId,
+            statPlayerId: player.playerID,
             cmv: player.CMV,
             tier: player.tier,
           });
         } else {
           playersRepository.set(playerExists._id, {
             cmv: player.CMV,
-            statPlayerId: player.playerId,
+            statPlayerId: player.playerID,
             tier: player.tier,
           });
         }
@@ -439,15 +439,18 @@ export function createDraftControllerService(
 
     updatePlayerStats: (playerstats) => {
       for (const player of playerstats) {
-        const statsDocExists = playerStatsRepository.findOne({ playerId: player.playerId, tier: player.tier, season: player.season, format: player.format });
+        const statsDocExists = playerStatsRepository.findOne({ playerID: player.playerID, tier: player.tier, season: player.season, format: player.format });
 
         if (!statsDocExists) {
+          console.log(player.gameWins, player.gamesPlayed, (player.gameWins / player.gamesPlayed) * 100);
           playerStatsRepository.create({
-            ...player
+            ...player,
+            winPercentage: (player.gameWins / player.gamesPlayed) * 100
           });
         } else {
           playerStatsRepository.set(statsDocExists._id, {
-            ...player
+            ...player,
+            winPercentage: (player.gameWins / player.gamesPlayed) * 100
           });
         }
       }
@@ -455,7 +458,7 @@ export function createDraftControllerService(
 
     uploadKeepers: (keeperData) => {
       for (const keeper of keeperData) {
-        const keeperDocExists = keeperPicksRepository.findOne({ playerId: keeper.playerId, tier: keeper.tier });
+        const keeperDocExists = keeperPicksRepository.findOne({ playerID: keeper.playerID, tier: keeper.tier });
 
         if (!keeperDocExists) {
           keeperPicksRepository.create({

@@ -3,10 +3,20 @@ import {UserCollection} from '/imports/core/infrastructure/db/user/user'
 import {FranchisesCollection} from '/imports/core/infrastructure/db/franchises'
 import {container} from '/imports/core/di/registry'
 import { Meteor } from 'meteor/meteor'
+import {DraftProgressCollection} from "/imports/core/infrastructure/db/draft-progress";
+import {PlayerstatsCollection} from "/imports/core/infrastructure/db/playerStats";
+import {PlayersCollection} from "/imports/core/infrastructure/db/players";
+import {PickOrderCollection} from "/imports/core/infrastructure/db/pick-order";
+import {KeeperpicksCollection} from "/imports/core/infrastructure/db/keeperPicks";
 
 const Collections = [
   UserCollection,
-  FranchisesCollection
+  FranchisesCollection,
+  DraftProgressCollection,
+  PlayerstatsCollection,
+  PlayersCollection,
+  PickOrderCollection,
+  KeeperpicksCollection,
 ]
 
 export const emptyCollection = (collection: Mongo.Collection<any>) => {
@@ -32,7 +42,7 @@ const seed = () => {
 }
 
 Meteor.methods({
-  "clearDB": () => {
+  "clearDb": () => {
     emptyAllCollections();
   },
   "seed": () => {

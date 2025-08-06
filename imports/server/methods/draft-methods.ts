@@ -9,9 +9,9 @@ import {FranchiseSlugs} from '/imports/core/domain/entities/franchises'
 const controller = (context: Context) => container.locate("application/services/controller/root-controller", context);
 
 export const PlayerStatsSchema = z.object({
-  playerId: z.string(),
+  playerID: z.number(),
   format: z.enum(["Pre-Season", "League Play", "Play-Offs"]),
-  teamId: z.string(),
+  teamID: z.string(),
   tier: z.enum(["Elite", "Rival", "Prospect", "Master"]),
   season: z.enum(["season1", "season2", "season3"]),
   minutesPlayed: z.number(),
@@ -55,7 +55,7 @@ export const PlayerStatsSchema = z.object({
 export const KeeperPicksSchema = z.object({
   name: z.string(),
   role: z.string(),
-  playerId: z.string(),
+  playerID: z.string(),
   tier: z.custom<Tiers>(),
   franchise: z.custom<FranchiseSlugs>(),
   cmv: z.number(),
@@ -87,7 +87,7 @@ const methods = {
     input: z.array(z.object({
       name: z.string(),
       CMV: z.number(),
-      playerId: z.string(),
+      playerID: z.string(),
       tier: z.custom<Tiers>()
     })),
     run: (input, context) => {

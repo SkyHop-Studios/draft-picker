@@ -5,7 +5,7 @@ export type KeeperpicksDocument = {
   createdAt: Date
   updatedAt: Date
 
-  playerId: string
+  playerID: string
   tier: Tiers
   franchise: string
   cmv: number
