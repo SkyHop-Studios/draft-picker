@@ -209,6 +209,12 @@ const methods = {
     }
   }),
 
+  "draft.getSelectedPlayerStats": methodBuilder({
+    run: (context) => {
+      return controller(context).draft.getSelectedPlayerStats();
+    }
+  }),
+
   "draft.getCurrentKeeperPicks": methodBuilder({
     run: (context) => {
       return controller(context).draft.getCurrentKeeperPicks();

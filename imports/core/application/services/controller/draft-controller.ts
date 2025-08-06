@@ -28,6 +28,7 @@ type PlayersWithStats = PlayersDocument & {
   demosInflicted?: number;
   winPercentage?: number;
   mvps?: number;
+  gamesPlayed?: number
 }
 
 type PlayersDocumentWithFranchiseInformation = {
@@ -43,6 +44,9 @@ export type IDraftControllerService = {
   getTrades: () => TradesDocument[];
   findPlayersByNameAndTier: ({ search, tier }: { search?: string, tier: Tiers }) => PlayersDocument[];
   findPlayersByFranchiseAndTier: ({ franchiseName, tier }: { franchiseName: string, tier: Tiers }) => PlayersDocumentWithFranchiseInformation;
+
+  getSelectedPlayerStats: () => PlayersWithStats | undefined;
+
   getCurrentRoundPicks: () => PlayersWithPick[];
   getKeeperPicks: () => KeeperpicksDocument[];
   getCurrentKeeperPicks: () => KeeperPicksWithCurrentlyChoosing[];
@@ -139,6 +143,27 @@ export function createDraftControllerService(
     getPickOrder: () => pickOrderRepository.getByIdOrThrow('pick_order'),
     getPlayers: () => playersRepository._list({}).results,
     getFranchises: () => franchisesRepository._list({}).results,
+
+    getSelectedPlayerStats() {
+      const draftProgress = draftProgressRepository.getByIdOrThrow('draft');
+      const player = playersRepository.findOne({ name: draftProgress.selectedPlayer });
+
+      if (!player) {
+        return null;
+      }
+
+      const playerStats = playerStatsRepository.findAndSumAllPlayerStatsByPlayerId(player.statPlayerId || "");
+      return {
+        ...player,
+        goals: playerStats?.goals,
+        assists: playerStats?.assists,
+        saves: playerStats?.saves,
+        gamesPlayed: playerStats.gamesPlayed,
+        demosInflicted: playerStats?.demosInflicted,
+        winPercentage: playerStats?.winPercentage,
+        mvps: playerStats?.mvps,
+      }
+    },
 
     getTrades: () => tradesRepository._list({}).results,
 

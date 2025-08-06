@@ -76,6 +76,8 @@ const StreamerPage = () => {
       {/*<div className="background-image h-[220px] w-[220px] ml-[36px]" style={{backgroundImage: "url(/RSC_SSA.png)"}}/>*/}
       <div className="w-[220px] ml-[36px] mt-[40px] relative text-center">
         <img className="w-[180px] h-auto mx-auto" src={LogoPoolForTier[draft.currentTier]} alt="tier"/>
+
+        {draft && <img className="absolute left-[32px] bottom-[22px] w-[156px]" src={bannerToUse[draft.currentTier]} alt="#"/>}
       </div>
     </div>
 
@@ -87,8 +89,7 @@ const StreamerPage = () => {
       </div>
 
       <div className="flex gap-5 items-center">
-        <div className="bg-center bg-cover bg-no-repeat h-[135px] w-[270px]"
-             style={{backgroundImage: `url(/round-pick-bg.svg)`}}>
+        <div className="bg-center bg-cover bg-no-repeat h-[135px] w-[270px]" style={{backgroundImage: `url(/round-pick-bg.svg)`}}>
           <div className="flex flex-col items-center justify-start pt-1 text-white">
             <div className="text-4xl leading-none font-bold">ROUND {draft.round}</div>
 
@@ -103,7 +104,7 @@ const StreamerPage = () => {
       style={{clipPath: "polygon(0 10%, 10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%)"}}>
 
       <div className="grid grid-cols-3 gap-6 pt-[120px] pb-[100px] px-[40px]">
-        <div className="text-white text-center col-span-2 pt-[30px]">
+        <div className="text-white text-center col-span-2 pt-[30px] border-2 border-white w-[400px] mx-auto">
           <div className="text-4xl uppercase font-bold">
             <ActiveFranchiseName/>
           </div>
@@ -113,11 +114,7 @@ const StreamerPage = () => {
 
             <div className="text-[40px]">
               {draft.selectedPlayer ?
-                <div className="flex flex-col items-center gap-2">
-                  <span
-                    className="text-[#da151e] max-w-[480px] truncate">{draft.selectedPlayer}</span>
-                  <span>{draft.selectedPlayerCMV}</span>
-                </div>
+                <SelectedPlayerCard />
                 : <span className="text-[#da151e]">...</span>
               }
             </div>
@@ -166,8 +163,62 @@ const StreamerPage = () => {
 
 export default StreamerPage;
 
+
+const SelectedPlayerCard = () => {
+  const { data: playerStats } = useMethodQuery("draft.getSelectedPlayerStats", {});
+
+  if (!playerStats) return null;
+
+  return <>
+    <div>
+      <div className="text-[#da151e] max-w-[480px] truncate">{playerStats.name}</div>
+      <div className="text-xl font-semibold">{playerStats.cmv} CMV</div>
+    </div>
+
+
+    <div className="relative border-t-2 mt-4 border-white">
+      <div>
+        <div className="font-bold text-2xl">
+          <div>
+          {playerStats?.winPercentage?.toFixed(2)} W%
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 uppercase text-lg">
+          <div className="flex gap-2  pl-4 items-center">
+            <img className="w-8 h-auto text-white" src="/icons/goal.svg" alt=""/> {playerStats.goals} Goals
+          </div>
+
+          <div className="flex gap-2 pl-4 items-center">
+            <img className="w-8 h-auto" src="/icons/assist.svg" alt=""/> {playerStats.assists} Assists
+          </div>
+
+          <div className="flex gap-2  pl-4 items-center">
+            <img className="w-8 h-auto" src="/icons/demo.svg" alt=""/> {playerStats.demosInflicted} Demos
+          </div>
+
+          <div className="flex gap-2  pl-4 items-center">
+            <img className="w-8 h-auto" src="/icons/save.svg" alt=""/> {playerStats.saves} Saves
+          </div>
+
+          <div className="flex gap-2  pl-4 items-center">
+            <img className="w-8 h-auto" src="/icons/mvp.svg" alt=""/> {playerStats.mvps} MVPS
+          </div>
+
+          <div className="flex gap-2  pl-4 items-center">
+            <img className="w-8 h-auto" src="/icons/game.svg" alt=""/> {playerStats.gamesPlayed} Games
+          </div>
+        </div>
+      </div>
+    </div>
+  </>
+}
+
 const RosterPicks = ({franchiseName, tier}: { franchiseName: string, tier: Tiers }) => {
-  const {data, isLoading} = useMethodQuery("draft.findPlayersByFranchiseAndTier", {franchiseName, tier }, { enabled: !!franchiseName && !!tier, refetchInterval: 1000 });
+  const {data, isLoading} = useMethodQuery("draft.findPlayersByFranchiseAndTier", {
+    franchiseName,
+    tier
+  }, {enabled: !!franchiseName && !!tier, refetchInterval: 1000});
 
   if (isLoading) {
     return null;
@@ -176,8 +227,6 @@ const RosterPicks = ({franchiseName, tier}: { franchiseName: string, tier: Tiers
   if (!data) return null;
 
   const franchiseLogo = data.franchise?.logo || "";
-
-  console.log(data)
 
   return <div className="flex flex-col gap-0.5">
     <div className="flex justify-center pt-4">
@@ -267,7 +316,7 @@ const NextFranchisesPicking = () => {
   return <div className="flex gap-4 justify-center items-end">
     {nextFranchises.previousFranchise ?
       <div>
-        <div className="text-center text-xl text-white uppercase mb-5">
+        <div className="text-center text-xl text-white uppercase mb-1">
           Previous
         </div>
         <div className={cn(franchiseListClasses, "grayscale h-[140px]")}
@@ -278,7 +327,7 @@ const NextFranchisesPicking = () => {
       </div>
       :
       <div>
-        <div className="text-center text-xl text-white uppercase mb-5">
+        <div className="text-center text-xl text-white uppercase mb-1">
           Previous
         </div>
         <div className={cn(franchiseListClasses, "grayscale h-[140px]")}
@@ -290,7 +339,7 @@ const NextFranchisesPicking = () => {
 
     {nextFranchises.currentFranchise ?
       <div>
-        <div className="text-center text-xl text-white uppercase mb-5">
+        <div className="text-center text-xl text-white uppercase mb-1">
           Current
         </div>
         <div className={cn(franchiseListClasses)}
@@ -301,7 +350,7 @@ const NextFranchisesPicking = () => {
       </div>
       :
       <div>
-        <div className="text-center text-xl text-white uppercase mb-5">
+        <div className="text-center text-xl text-white uppercase mb-1">
           Current
         </div>
         <div className={cn(franchiseListClasses, "grayscale")}
@@ -313,7 +362,7 @@ const NextFranchisesPicking = () => {
 
     {nextFranchises.nextFranchise ?
       <div>
-        <div className="text-center text-xl text-white uppercase mb-5">
+        <div className="text-center text-xl text-white uppercase mb-1">
           Next
         </div>
         <div className={cn(franchiseListClasses, "grayscale h-[140px]")}
@@ -324,7 +373,7 @@ const NextFranchisesPicking = () => {
       </div>
       :
       <div>
-        <div className="text-center text-xl text-white uppercase mb-5">
+        <div className="text-center text-xl text-white uppercase mb-1">
           Next
         </div>
         <div className={cn(franchiseListClasses, "grayscale h-[140px]")}
