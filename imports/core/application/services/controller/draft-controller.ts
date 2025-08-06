@@ -21,6 +21,20 @@ type KeeperPicksWithCurrentlyChoosing = KeeperpicksDocument & {
   hasPassed: boolean;
 }
 
+type PlayersWithStats = PlayersDocument & {
+  goals?: number;
+  assists?: number;
+  saves?: number;
+  demosInflicted?: number;
+  winPercentage?: number;
+  mvps?: number;
+}
+
+type PlayersDocumentWithFranchiseInformation = {
+  players: PlayersWithStats[]
+  franchise: FranchisesDocument | null;
+}
+
 export type IDraftControllerService = {
   getDraftProgress: () => DraftProgressDocument;
   getFranchises: () => FranchisesDocument[];
@@ -28,7 +42,7 @@ export type IDraftControllerService = {
   getPlayers: () => PlayersDocument[];
   getTrades: () => TradesDocument[];
   findPlayersByNameAndTier: ({ search, tier }: { search?: string, tier: Tiers }) => PlayersDocument[];
-  findPlayersByFranchiseAndTier: ({ franchiseName, tier }: { franchiseName: string, tier: Tiers }) => PlayersDocument[];
+  findPlayersByFranchiseAndTier: ({ franchiseName, tier }: { franchiseName: string, tier: Tiers }) => PlayersDocumentWithFranchiseInformation;
   getCurrentRoundPicks: () => PlayersWithPick[];
   getKeeperPicks: () => KeeperpicksDocument[];
   getCurrentKeeperPicks: () => KeeperPicksWithCurrentlyChoosing[];
@@ -290,12 +304,33 @@ export function createDraftControllerService(
       const franchise = franchisesRepository.findOne({ slug: franchiseName });
 
       if (!franchiseName || !franchise) {
-        return [];
+        return {
+          players: [],
+          franchise: null
+        };
       }
 
       selector.franchiseId = franchise._id;
 
-      return playersRepository._list(selector).results;
+      const players = playersRepository._list(selector).results;
+      const playersWithPlayerStats = players.map(player => {
+        const playerStats = playerStatsRepository.findAndSumAllPlayerStatsByPlayerId(player.statPlayerId || "");
+
+        return {
+          ...player,
+          goals: playerStats?.goals,
+          assists: playerStats?.assists,
+          saves: playerStats?.saves,
+          demosInflicted: playerStats?.demosInflicted,
+          winPercentage: playerStats?.winPercentage,
+          mvps: playerStats?.mvps,
+        }}
+      );
+
+      return {
+        players: playersWithPlayerStats,
+        franchise
+      };
     },
 
     createPickOrderForTierWithFranchiseOrder: (tier: Tiers, franchiseOrder: string[]) => {

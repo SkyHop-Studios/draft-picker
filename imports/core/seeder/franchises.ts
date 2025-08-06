@@ -6,51 +6,61 @@ export const FranchisesSeederData: NewFranchiseDocument[] = [
   {
     name: "Azura Gaming",
     logo: "azg.png",
-    slug: "azg"
+    slug: "azg",
+    hexcode: "#7E00FF"
   },
   {
     name: "CosmiCo Esports",
     logo: "CosmiCo.png",
-    slug: "CosmiCo"
+    slug: "CosmiCo",
+    hexcode: "#7A00A3"
   },
   {
     name: "Death Cloud Esports",
     logo: "Death Cloud Esports.png",
-    slug: "dce"
+    slug: "dce",
+    hexcode: "#B155FF"
   },
   {
     name: "GeneSix Esports",
     logo: "GeneSix.png",
-    slug: "G6"
+    slug: "G6",
+    hexcode: "#75EF0C"
   },
   {
     name: "Monarch Realm",
     logo: "Monarch Realm.png",
-    slug: "monarch"
+    slug: "monarch",
+    hexcode: "#FFC600"
   },
   {
     name: "Omnius Gaming",
     logo: "Omnius Gaming.png",
-    slug: "omnius"
+    slug: "omnius",
+    hexcode: "#6CD10E"
   },
   {
     name: "Ox Gaming",
     logo: "oxgaming.png",
-    slug: "ox"
+    slug: "ox",
+    hexcode: "#AA9D8D"
   },
   {
     name: "Unity Esports",
     logo: "unity.png",
-    slug: "unity"
+    slug: "unity",
+    hexcode: "#21C2FF"
   },
   {
     name: "Shadow Esports",
     logo: "shadow.png",
-    slug: "shadow"
+    slug: "shadow",
+    hexcode: "#000000"
   },
   {
     name: "White Rabbit Gaming",
     logo: "White Rabbit Gaming.png",
-    slug: "wrg"
+    slug: "wrg",
+    hexcode: "#FFFFFF"
   }
 ]

@@ -81,22 +81,18 @@ const StreamerPage = () => {
 
     <PicksThisRound currentTier={draft.currentTier} currentRound={draft.round}/>
 
-    <div className="absolute top-[200px] left-[450px] z-50 flex items-start gap-6">
+    <div className="absolute top-[212px] left-[330px] z-50 flex items-start gap-6">
       <div className="w-[220px]" style={{marginTop: -94, marginLeft: -10, transform: "rotate(-17deg) scale(1.9)"}}>
         {/*<img src="/crown.png" alt="crown"/>*/}
       </div>
 
-      <div className="flex gap-5 items-center -mt-[88px] ml-[48px]">
-        <div className="bg-center bg-contain bg-no-repeat flex items-center justify-center h-[100px]"
-             style={{backgroundImage: `url(/Round-Pick - Background.svg)`}}>
-          <div className="flex flex-col items-center text-white">
-            <div className="text-2xl leading-none font-bold">ROUND</div>
-            <div className="text-2xl leading-none font-bold">{draft.round}</div>
-          </div>
+      <div className="flex gap-5 items-center">
+        <div className="bg-center bg-cover bg-no-repeat h-[135px] w-[270px]"
+             style={{backgroundImage: `url(/round-pick-bg.svg)`}}>
+          <div className="flex flex-col items-center justify-start pt-1 text-white">
+            <div className="text-4xl leading-none font-bold">ROUND {draft.round}</div>
 
-          <div className="flex flex-col items-center text-white">
-            <div className="text-2xl leading-none font-bold">PICK</div>
-            <div className="text-4xl leading-none font-bold">{draft.currentPick}</div>
+            <div className="text-2xl leading-none font-bold">PICK {draft.currentPick}</div>
           </div>
         </div>
       </div>
@@ -132,23 +128,13 @@ const StreamerPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between w-[250px] self-end h-[268px]">
+        <div className="absolute top-0 right-[40px]">
           <div
-            className={cn("border-l-4 border-r-4 border-y-4 p-3 grow shrink-0", draft && borderForRoster[draft.currentTier])}>
+            className={cn("bg-no-repeat bg-cover bg-center grow shrink-0 h-[520px] w-[270px]")} style={{ backgroundImage: `url(/RosterBackground.svg)` }}>
             {(draft && pickOrder) && <RosterPicks
               tier={draft.currentTier}
               franchiseName={pickOrder.order[draft.currentTier][draft.currentPick - 1]}
             />}
-          </div>
-
-          <div
-            className={cn("text-black text-xl flex justify-center gap-2 px-4 py-0 grow-0", draft && colorForRoster[draft.currentTier])}>
-            <span>R</span>
-            <span>O</span>
-            <span>S</span>
-            <span>T</span>
-            <span>E</span>
-            <span>R</span>
           </div>
         </div>
 
@@ -181,16 +167,40 @@ const StreamerPage = () => {
 export default StreamerPage;
 
 const RosterPicks = ({franchiseName, tier}: { franchiseName: string, tier: Tiers }) => {
-  const {data: players} = useMethodQuery("draft.findPlayersByFranchiseAndTier", {franchiseName, tier }, { enabled: !!franchiseName && !!tier, refetchInterval: 1000 });
+  const {data, isLoading} = useMethodQuery("draft.findPlayersByFranchiseAndTier", {franchiseName, tier }, { enabled: !!franchiseName && !!tier, refetchInterval: 1000 });
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!data) return null;
+
+  const franchiseLogo = data.franchise?.logo || "";
+
+  console.log(data)
 
   return <div className="flex flex-col gap-0.5">
-    {_.map(players, (player, index) => {
-      return <span className="text-white font-bold text-xl truncate">{index + 1}. {player.name}</span>
+    <div className="flex justify-center pt-4">
+      <img className="max-w-[80px] max-h-[80px]" src={`/logos/${franchiseLogo}`} alt=""/>
+    </div>
+
+    <div className="text-center text-2xl uppercase text-white">
+      {data.franchise?.name}
+    </div>
+
+    <div className="text-center text-4xl uppercase font-bold" style={{ color: data.franchise?.hexcode || "#ffffff" }}>
+      ROSTER
+    </div>
+
+    {_.map(data.players, (player, index) => {
+      return <span className="text-white font-bold text-xl pl-2 truncate">
+        {index + 1}. {player.name} - {player.winPercentage} W%
+      </span>
     })}
   </div>
 }
 
-const PicksThisRound = ({ currentTier, currentRound }: { currentTier: Tiers, currentRound: number }) => {
+const PicksThisRound = ({currentTier, currentRound}: { currentTier: Tiers, currentRound: number }) => {
   const { data: players } = useMethodQuery("draft.getCurrentRoundPicks", {}, {
     refetchInterval: 1000
   })
@@ -250,9 +260,9 @@ const NextFranchisesPicking = () => {
 
   if (!nextFranchises) return null;
 
-  const previousFranchiseIsUnitoxOrDSQ = false;
-  const currentFranchiseIsUnitoxOrDSQ = false;
-  const nextFranchiseIsUnitoxOrDSQ = false;
+  const previousFranchiseIsWRG = nextFranchises?.previousFranchise?.slug === "wrg";
+  const currentFranchiseIsWRG = nextFranchises?.currentFranchise?.slug === "wrg";
+  const nextFranchiseIsWRG = nextFranchises?.nextFranchise?.slug === "wrg";
 
   return <div className="flex gap-4 justify-center items-end">
     {nextFranchises.previousFranchise ?
@@ -262,8 +272,8 @@ const NextFranchisesPicking = () => {
         </div>
         <div className={cn(franchiseListClasses, "grayscale h-[140px]")}
              style={{backgroundImage: "url(/Stats-Hex.svg)"}}>
-          {!previousFranchiseIsUnitoxOrDSQ && <img className="w-[100px] h-auto" src={"/logos/" + nextFranchises.previousFranchise.logo} alt="logo"/>}
-          {previousFranchiseIsUnitoxOrDSQ  && <img className="w-[60px] h-auto" src={"/logos/" + nextFranchises.previousFranchise.logo} alt="logo"/>}
+          {!previousFranchiseIsWRG && <img className="w-[100px] h-auto" src={"/logos/" + nextFranchises.previousFranchise.logo} alt="logo"/>}
+          {previousFranchiseIsWRG  && <img className="w-[60px] h-auto" src={"/logos/" + nextFranchises.previousFranchise.logo} alt="logo"/>}
         </div>
       </div>
       :
@@ -285,8 +295,8 @@ const NextFranchisesPicking = () => {
         </div>
         <div className={cn(franchiseListClasses)}
              style={{backgroundImage: "url(/Stats-Hex.svg)"}}>
-          {!currentFranchiseIsUnitoxOrDSQ && <img className="w-[110px] h-auto" src={"/logos/" + nextFranchises.currentFranchise.logo} alt="logo"/>}
-          {currentFranchiseIsUnitoxOrDSQ && <img className="w-[70px] h-auto" src={"/logos/" + nextFranchises.currentFranchise.logo} alt="logo"/>}
+          {!currentFranchiseIsWRG && <img className="w-[110px] h-auto" src={"/logos/" + nextFranchises.currentFranchise.logo} alt="logo"/>}
+          {currentFranchiseIsWRG && <img className="w-[70px] h-auto" src={"/logos/" + nextFranchises.currentFranchise.logo} alt="logo"/>}
         </div>
       </div>
       :
@@ -308,8 +318,8 @@ const NextFranchisesPicking = () => {
         </div>
         <div className={cn(franchiseListClasses, "grayscale h-[140px]")}
              style={{backgroundImage: "url(/Stats-Hex.svg)"}}>
-          {!nextFranchiseIsUnitoxOrDSQ && <img className="w-[100px] h-auto" src={"/logos/" + nextFranchises.nextFranchise.logo} alt="logo"/>}
-          {nextFranchiseIsUnitoxOrDSQ && <img className="w-[60px] h-auto" src={"/logos/" + nextFranchises.nextFranchise.logo} alt="logo"/>}
+          {!nextFranchiseIsWRG && <img className="w-[100px] h-auto" src={"/logos/" + nextFranchises.nextFranchise.logo} alt="logo"/>}
+          {nextFranchiseIsWRG && <img className="w-[60px] h-auto" src={"/logos/" + nextFranchises.nextFranchise.logo} alt="logo"/>}
         </div>
       </div>
       :

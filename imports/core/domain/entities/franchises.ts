@@ -7,6 +7,7 @@ export type FranchisesDocument = {
   name: string
   slug: FranchiseSlugs
   logo: string
+  hexcode: string
 }
 
 export type FranchiseSlugs = "azg" | "CosmiCo" | "dce" | "G6" | "monarch" | "shadow" | "omnius" | "ox" | "unity" | "wrg"
